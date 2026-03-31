@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from loan_with_refinancing import LoanWithRefinancing
+from modules.loan_with_refinancing import LoanWithRefinancing
 
 
 def test_loan_with_refinancing():

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from comparison import (
+from modules.comparison import (
     RefinanceVariant,
     build_baseline_result,
     build_display_graph_dataframe,

@@ -1,4 +1,4 @@
-from taxes import Taxes
+from modules.taxes import Taxes
 
 
 def test_aggregate_yearly_interests():

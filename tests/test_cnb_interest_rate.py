@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from cnb_interest_rates import Rates
+from modules.cnb_interest_rates import Rates
 
 
 class TestRates(unittest.TestCase):

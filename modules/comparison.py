@@ -3,10 +3,10 @@ from dataclasses import dataclass
 import pandas as pd
 from mortgage import Loan
 
-from investor import InvestmentData, Investor
-from investing_strategies import FIXED_INTEREST_RATES
-from loan_with_refinancing import LoanWithRefinancing
-from taxes import Taxes
+from modules.investor import InvestmentData, Investor
+from modules.investing_strategies import FIXED_INTEREST_RATES
+from modules.loan_with_refinancing import LoanWithRefinancing
+from modules.taxes import Taxes
 
 
 @dataclass

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 import pandas as pd
-from investing_strategies import InvestStrategies
+from modules.investing_strategies import InvestStrategies
 
 
 def file_to_df(file_path: str) -> pd.DataFrame:

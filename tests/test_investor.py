@@ -1,4 +1,4 @@
-from investor import Investor, InvestmentData
+from modules.investor import Investor, InvestmentData
 
 
 def init_investor():

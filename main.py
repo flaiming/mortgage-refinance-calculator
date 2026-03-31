@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import streamlit as st
 import pandas as pd
 
-from comparison import (
+from modules.comparison import (
     RefinanceVariant,
     build_baseline_result,
     build_display_graph_dataframe,
@@ -12,7 +12,7 @@ from comparison import (
     build_display_summary_dataframe,
     build_variant_results,
 )
-from investing_strategies import FIXED_INTEREST_RATES
+from modules.investing_strategies import FIXED_INTEREST_RATES
 
 RISK_OPTIONS = {
     "safe": "Konzervativní",

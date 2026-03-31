@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from mortgage import Loan
 
-from investor import InvestmentData, Investor
+from modules.investor import InvestmentData, Investor
 
 
 @dataclass
