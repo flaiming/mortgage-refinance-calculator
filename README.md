@@ -1,11 +1,11 @@
-# Engeto Hackathon Mortgage Refinance Calculator
-
-This repository contains a Streamlit prototype created during the ENGETO hackathon focused on financial literacy.
+# Mortgage Refinance Calculator
 
 The project helps users reason about mortgage refinancing after a fixation period. Instead of comparing only interest rates, it also looks at monthly cashflow and simulates what happens if the payment difference is invested over time.
 
-The project won the hackathon. Coverage of the result and product idea is available here:
-https://zpravy.kurzy.cz/791857-vitezem-hackathonu-se-zamerenim-na-financni-gramotnost-se-stal-tym-ktery-vytvoril-kalkulacku-pro/
+The project won the hackathon. Coverage of the result and product idea is available [here](https://zpravy.kurzy.cz/791857-vitezem-hackathonu-se-zamerenim-na-financni-gramotnost-se-stal-tym-ktery-vytvoril-kalkulacku-pro/).
+
+It is build on top of the [Streamlit prototype](https://github.com/flaiming/EngetoHackathon) created during the ENGETO hackathon focused on financial literacy.
+
 
 ## What the app does
 
@@ -44,26 +44,17 @@ The codebase represents this through three simple investment scenarios:
 
 ## Project structure
 
-- [main.py](/home/flaim/www/EngetoHackathon/main.py)  
-  Streamlit entrypoint and user interface.
+- `main.py` — Streamlit entrypoint and user interface.
 
-- [loan_with_refinancing.py](/home/flaim/www/EngetoHackathon/loan_with_refinancing.py)  
-  Extends the mortgage schedule with a refinance event and optional investment simulation.
+- `modules/` — Core library modules:
+  - `comparison.py` — Multi-variant refinance scenario comparison and display helpers.
+  - `loan_with_refinancing.py` — Extends the mortgage schedule with a refinance event and optional investment simulation.
+  - `investor.py` — Tracks portfolio growth for the three investment profiles.
+  - `investing_strategies.py` — Investment-return logic. Currently uses fixed annual returns.
+  - `taxes.py` — Helper for aggregating tax deductions from mortgage interest.
+  - `cnb_interest_rates.py` — Utility for fetching Czech National Bank rates. Not currently wired into the Streamlit UI.
 
-- [investor.py](/home/flaim/www/EngetoHackathon/investor.py)  
-  Tracks portfolio growth for the three investment profiles.
-
-- [investing_strategies.py](/home/flaim/www/EngetoHackathon/investing_strategies.py)  
-  Investment-return logic. At the moment, this is effectively a simplified placeholder with fixed annual returns.
-
-- [taxes.py](/home/flaim/www/EngetoHackathon/taxes.py)  
-  Helper for aggregating tax deductions from mortgage interest.
-
-- [cnb_interest_rates.py](/home/flaim/www/EngetoHackathon/cnb_interest_rates.py)  
-  Utility for fetching Czech National Bank rates. This is not currently wired into the Streamlit UI.
-
-- `test_*.py`  
-  Unit tests for the refinance, investing, taxes, and rate-fetching logic.
+- `tests/` — Unit tests for the refinance, investing, taxes, comparison, and rate-fetching logic.
 
 ## Running locally
 
