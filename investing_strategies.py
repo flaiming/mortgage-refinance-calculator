@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 
 TIMEFRAMES = {'1d': 1 / 365, '5d': 1 / 73, '1mo': 1 / 12, '3mo': 1 / 4, '6mo': 1 / 2, '1y': 1, '2y': 2, '5y': 5, '10y': 10, 'ytd': None, 'max': None}
+FIXED_INTEREST_RATES = {"safe": 0.04, "medium": 0.06, "risky": 0.08}
 
 
 class InvestStrategies:
@@ -9,6 +10,7 @@ class InvestStrategies:
         # timeframe must be one of -> ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
         self.__status = False
         self.time_frame = time_frame
+
         try:
             self.safe = yf.download("ZN=F", group_by="Ticker", period=time_frame)       # safe strategy     10-Year T-Note Futures,Dec-2024 https://finance.yahoo.com/quote/ZN%3DF/
             self.medium = yf.download("^SPX", group_by="Ticker", period=time_frame)     # medium strategy   S&P 500 index,                  https://finance.yahoo.com/quote/%5ESPX/

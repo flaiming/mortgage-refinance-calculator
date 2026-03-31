@@ -12,7 +12,7 @@ class TestRates(unittest.TestCase):
             mock_response.content = file.read().encode('utf-8')
         mock_get.return_value = mock_response
 
-        rates = Rates()
+        rates = Rates("test-key")
 
         self.assertTrue(rates.get_status())
         self.assertEqual(rates.get_date().strftime("%Y-%m-%d"), "2024-10-31")
@@ -30,7 +30,7 @@ class TestRates(unittest.TestCase):
             mock_response.content = file.read().encode('utf-8')
         mock_get.return_value = mock_response
 
-        rates = Rates()
+        rates = Rates("test-key")
 
         self.assertTrue(rates.get_status())
         self.assertEqual(rates.get_date().strftime("%Y-%m-%d"), "2021-02-04")
@@ -48,7 +48,7 @@ class TestRates(unittest.TestCase):
             mock_response.content = file.read().encode('utf-8')
         mock_get.return_value = mock_response
 
-        rates = Rates()
+        rates = Rates("test-key")
 
         self.assertTrue(rates.get_status())
         self.assertEqual(rates.get_date().strftime("%Y-%m-%d"), "2024-10-31")
@@ -64,7 +64,7 @@ class TestRates(unittest.TestCase):
         mock_response.status_code = 404
         mock_get.return_value = mock_response
 
-        rates = Rates()
+        rates = Rates("test-key")
 
         self.assertFalse(rates.get_status())
         self.assertIsNone(rates.get_date())

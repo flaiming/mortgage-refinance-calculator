@@ -16,10 +16,8 @@ EMPTY = {"", "NaN"}
 
 
 class Rates:
-    def __init__(self) -> None:
-        load_dotenv()
-        key = os.getenv('ARAD_API_KEY')
-        url = "https://www.cnb.cz/aradb/api/v1/data-trans?set_id=1119&months_before=24&api_key=" + key
+    def __init__(self, api_key: str) -> None:
+        url = "https://www.cnb.cz/aradb/api/v1/data-trans?set_id=1119&months_before=24&api_key=" + api_key
         self.__status = False
         self.__date: None | datetime = None         # date of the data
         self.__SFTP01M11: None | float = None       # 2T repo sazba - 2 týdny
@@ -64,9 +62,10 @@ class Rates:
         return self.__status
 
 
-'''
 def main() -> None:
-    rates = Rates()
+    load_dotenv()
+    key = os.getenv('ARAD_API_KEY')
+    rates = Rates(key)
     print(f"Status: {rates.get_status()}")
     print(f"Date: {rates.get_date()}")
 
@@ -77,4 +76,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-'''

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from investing_strategies import InvestStrategies
+from investing_strategies import FIXED_INTEREST_RATES, InvestStrategies
 
 
 @dataclass
@@ -29,15 +29,7 @@ class Investor:
 
     @staticmethod
     def get_interest_rates():
-        """
-        downloads interest rates from yahoo
-        safe is based on treasury bonds
-        medium is based on S&P
-        risky is based on tesla stock
-        """
-        invs = InvestStrategies()
-        safe, medium, risky = invs.interest_rates()
-        return {"risky": risky, "medium": medium, "safe": safe}
+        return dict(FIXED_INTEREST_RATES)
 
     def apply_interests(self):
         """
