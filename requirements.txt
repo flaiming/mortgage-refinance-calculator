@@ -2,6 +2,7 @@ black==24.10.0
 isort==5.13.2
 ruff==0.8.0
 pre_commit==4.0.1
+plotly==6.6.0
 python-dotenv==1.0.1
 requests==2.32.3
 streamlit==1.40.1
