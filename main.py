@@ -8,7 +8,6 @@ from modules.comparison import (
     build_baseline_result,
     build_display_graph_dataframe,
     build_display_milestone_dataframes,
-    build_display_net_balance_graph_dataframe,
     build_display_summary_dataframe,
     build_variant_results,
 )
@@ -292,6 +291,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.title("Kalkulačka refinancování hypotéky")
+st.markdown(
+    "Porovnejte různé varianty refinancování vaší hypotéky a zjistěte, kolik můžete ušetřit. "
+    "Kalkulačka vám ukáže, jak se změní vaše splátky při novém úroku nebo délce splácení, "
+    "a automaticky spočítá, zda se vyplatí ušetřené peníze investovat. "
+    "Díky přehledným grafům a tabulkám snadno porovnáte scénáře a najdete tu nejvýhodnější strategii pro vaši situaci."
+)
+st.markdown(
+    "**Proč zvážit prodloužení hypotéky?** "
+    "Delší hypotéka znamená nižší měsíční splátku — a rozdíl oproti původní splátce můžete pravidelně investovat. "
+    "Pokud dlouhodobý výnos investice převýší úrok z hypotéky, vyděláte na tom víc, než kolik zaplatíte navíc na úrocích. "
+    "Hypotéka je navíc často nejlevnější forma úvěru a úroky si můžete částečně odečíst z daní. "
+    "Tato kalkulačka vám pomůže ověřit, zda se tato strategie vyplatí právě ve vaší situaci."
+)
 
 with st.container(border=True):
     st.markdown("**Původní hypotéka**")
@@ -353,11 +365,8 @@ ensure_variant_state()
 st.subheader("Varianty refinancování")
 st.caption("U každé varianty zadejte nový úrok a změnu délky hypotéky (+ prodloužení, − zkrácení). Rok refinancování je společný pro všechny varianty.")
 
-if st.button("Přidat variantu"):
-    add_variant()
-
 updated_variants = []
-for variant in st.session_state.refinance_variants:
+for variant_index, variant in enumerate(st.session_state.refinance_variants):
     variant_id = variant["id"]
     rate_key = f"refinancing_interest_{variant_id}"
     change_key = f"length_change_{variant_id}"
@@ -373,10 +382,13 @@ for variant in st.session_state.refinance_variants:
     st.session_state.setdefault(extra_key, variant["extra_principal"])
 
     with st.container(border=True):
-        header_col, remove_col = st.columns([5, 1])
-        header_col.markdown(f"**Varianta {variant_id}**")
-        if remove_col.button("Smazat", key=f"remove_variant_{variant_id}"):
-            remove_variant(variant_id)
+        if variant_index >= 2:
+            header_col, remove_col = st.columns([9, 1])
+            header_col.markdown(f"**Varianta {variant_id}**")
+            if remove_col.button("Smazat", key=f"remove_variant_{variant_id}"):
+                remove_variant(variant_id)
+        else:
+            st.markdown(f"**Varianta {variant_id}**")
 
         input_col1, input_col2, input_col3 = st.columns(3)
         refinancing_interest_pct = input_col1.number_input(
@@ -418,6 +430,9 @@ for variant in st.session_state.refinance_variants:
         )
 
 st.session_state.refinance_variants = updated_variants
+
+if st.button("Přidat variantu"):
+    add_variant()
 
 # Sync all inputs to URL query params (only if changed, to avoid extra reruns)
 _variants_json = json.dumps(
@@ -491,33 +506,6 @@ for result in results:
             "label": f"Splacení ({month}. m)",
         })
 render_line_chart(graph_df, markers=payoff_markers)
-
-st.subheader("Aktuální bilance prostředků")
-st.caption("Bilance = investice + kumulativní daňová úspora - zbývající dluh. Na začátku tedy začíná v mínusu ve výši celé hypotéky.")
-net_balance_graph_df = build_display_net_balance_graph_dataframe(
-    results,
-    refinancing_year=int(refinancing_year),
-    annual_inflation=inflation,
-    display_mode=display_mode,
-)
-# Find balance-crosses-zero markers
-zero_cross_markers = []
-for result in results:
-    if result.is_baseline:
-        continue
-    df = result.schedule_df
-    net = df["investment_values"] + df["tax_savings_cumulative"] - df["balance"]
-    crossed = df.loc[net >= 0, "month"]
-    if not crossed.empty:
-        month = int(crossed.iloc[0])
-        net_val = float(net.loc[df["month"] == month].iloc[0])
-        zero_cross_markers.append({
-            "x": month,
-            "y": net_val,
-            "variant": result.name,
-            "label": f"Bilance ≥ 0 ({month}. m)",
-        })
-render_line_chart(net_balance_graph_df, markers=zero_cross_markers)
 
 summary_df = build_display_summary_dataframe(
     results,

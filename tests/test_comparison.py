@@ -5,7 +5,6 @@ from modules.comparison import (
     build_baseline_result,
     build_display_graph_dataframe,
     build_display_milestone_dataframes,
-    build_display_net_balance_graph_dataframe,
     build_display_summary_dataframe,
     build_milestone_dataframes,
     build_variant_result,
@@ -69,25 +68,6 @@ def test_graph_and_summary_include_baseline_and_variant_columns():
     assert set(summary_df["Scénář"]) == {"Bez refinancování", "3 let | 0.50 %"}
     assert "Průměrná roční daňová úspora" in summary_df.columns
     assert "Měsíc plného doplacení investicí" in summary_df.columns
-
-
-def test_net_balance_graph_starts_at_negative_principal_and_cuts_off_baseline():
-    baseline = build_baseline_result(principal=100_000, interest=0.01, term=2)
-    variant = build_variant_result(
-        principal=100_000,
-        original_interest=0.01,
-        original_term=2,
-        refinancing_year=1,
-        variant=RefinanceVariant(refinancing_interest=0.005, new_loan_length=3),
-        risk_choice="risky",
-    )
-
-    net_balance_df = build_display_net_balance_graph_dataframe([baseline, variant], refinancing_year=1)
-
-    assert net_balance_df.loc[0, "Bez refinancování"] == -100000
-    assert net_balance_df.loc[0, "3 let | 0.50 %"] == -100000
-    assert net_balance_df.loc[12, "Bez refinancování"] < 0
-    assert pd.isna(net_balance_df.loc[13, "Bez refinancování"])
 
 
 def test_longer_variant_invests_difference_against_shorter_reference_variant():

@@ -338,7 +338,21 @@ def build_variant_results(
         for result in results_by_group
     ]
 
-    return sorted(results_by_group, key=lambda result: (result.schedule_df["month"].iloc[0], result.loan_length_years, result.name))
+    sorted_results = sorted(results_by_group, key=lambda result: (result.schedule_df["month"].iloc[0], result.loan_length_years, result.name))
+
+    # Deduplicate names by appending a counter suffix
+    name_counts: dict[str, int] = {}
+    for result in sorted_results:
+        count = name_counts.get(result.name, 0) + 1
+        name_counts[result.name] = count
+    seen: dict[str, int] = {}
+    for result in sorted_results:
+        base_name = result.name
+        seen[base_name] = seen.get(base_name, 0) + 1
+        if name_counts[base_name] > 1:
+            result.name = f"{base_name} ({seen[base_name]})"
+
+    return sorted_results
 
 
 def build_graph_dataframe(results: list[ScenarioResult], refinancing_year: int | None = None) -> pd.DataFrame:
@@ -352,28 +366,6 @@ def build_graph_dataframe(results: list[ScenarioResult], refinancing_year: int |
         graph_data[f"{result.name} - zůstatek"] = balance_series
         if not result.is_baseline and schedule_df["investment_values"].max() > 0:
             graph_data[f"{result.name} - investice"] = schedule_df["investment_values"]
-
-    graph_df = pd.DataFrame(graph_data)
-    graph_df.index.name = "Měsíc"
-    return graph_df.sort_index()
-
-
-def build_net_balance_graph_dataframe(results: list[ScenarioResult], refinancing_year: int | None = None) -> pd.DataFrame:
-    graph_data: dict[str, pd.Series] = {}
-    refinancing_cutoff_month = None if refinancing_year is None else refinancing_year * 12
-
-    for result in results:
-        schedule_df = result.schedule_df.set_index("month")
-        net_balance_series = -schedule_df["balance"] + schedule_df["investment_values"] + schedule_df["tax_savings_cumulative"]
-        net_balance_series = pd.concat(
-            [
-                pd.Series({0: -result.initial_principal}, dtype=float),
-                net_balance_series.astype(float),
-            ]
-        ).sort_index()
-        if result.is_baseline and refinancing_cutoff_month is not None:
-            net_balance_series = net_balance_series.where(net_balance_series.index <= refinancing_cutoff_month)
-        graph_data[result.name] = net_balance_series
 
     graph_df = pd.DataFrame(graph_data)
     graph_df.index.name = "Měsíc"
@@ -398,24 +390,6 @@ def build_display_graph_dataframe(
         ]
     return real_graph_df
 
-
-def build_display_net_balance_graph_dataframe(
-    results: list[ScenarioResult],
-    refinancing_year: int | None = None,
-    annual_inflation: float = 0.0,
-    display_mode: str = "nominal",
-) -> pd.DataFrame:
-    graph_df = build_net_balance_graph_dataframe(results, refinancing_year=refinancing_year)
-    if display_mode != "real":
-        return graph_df
-
-    real_graph_df = graph_df.copy()
-    for column in real_graph_df.columns:
-        real_graph_df[column] = [
-            deflate_value(value, month, annual_inflation)
-            for month, value in zip(real_graph_df.index, real_graph_df[column])
-        ]
-    return real_graph_df
 
 
 def _extract_at_month(
