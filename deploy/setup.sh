@@ -17,7 +17,7 @@ fi
 # Virtualenv
 echo "==> Setting up virtualenv"
 if [ ! -d "$VENV_DIR" ]; then
-    python3 -m venv "$VENV_DIR"
+    python3.12 -m venv "$VENV_DIR"
 fi
 "$VENV_DIR/bin/pip" install --upgrade pip -q
 "$VENV_DIR/bin/pip" install -r "$REPO_DIR/requirements.txt" -q
