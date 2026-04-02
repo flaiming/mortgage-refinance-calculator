@@ -1,5 +1,7 @@
 # Mortgage Refinance Calculator
 
+**Live app:** https://hypo.vojtechoram.cz/
+
 The project helps users reason about mortgage refinancing after a fixation period. Instead of comparing only interest rates, it also looks at monthly cashflow and simulates what happens if the payment difference is invested over time.
 
 The project won the hackathon. Coverage of the result and product idea is available [here](https://zpravy.kurzy.cz/791857-vitezem-hackathonu-se-zamerenim-na-financni-gramotnost-se-stal-tym-ktery-vytvoril-kalkulacku-pro/).
