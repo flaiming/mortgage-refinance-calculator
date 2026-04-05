@@ -31,6 +31,18 @@ def _format_czk(value: float) -> str:
     return f"{int(round(value)):,}".replace(",", " ")
 
 
+def _parse_int_from_text(text: str, default: int) -> int:
+    cleaned = text.replace(" ", "").replace("\u00a0", "").strip()
+    try:
+        return int(cleaned)
+    except ValueError:
+        return default
+
+
+def _format_thousands(value: int) -> str:
+    return f"{value:,}".replace(",", " ")
+
+
 VARIANT_COLORS = [
     "#1f77b4",  # modrá
     "#d62728",  # červená
@@ -144,6 +156,8 @@ def format_summary_dataframe(summary_df):
             formatted_df[column] = formatted_df[column].map(lambda value: "-" if pd.isna(value) else format_currency(value))
     if "Měsíc plného doplacení investicí" in formatted_df.columns:
         formatted_df["Měsíc plného doplacení investicí"] = formatted_df["Měsíc plného doplacení investicí"].map(format_payoff_month)
+    if "Délka hypotéky [roky]" in formatted_df.columns:
+        formatted_df["Délka hypotéky [roky]"] = formatted_df["Délka hypotéky [roky]"].map(lambda value: str(int(value)))
     return formatted_df
 
 
@@ -198,13 +212,13 @@ def ensure_variant_state():
             st.session_state.refinance_variants = [
                 {
                     "id": 1,
-                    "refinancing_interest": 5.0,
+                    "refinancing_interest": 4.39,
                     "length_change": 0,
                     "extra_principal": 0,
                 },
                 {
                     "id": 2,
-                    "refinancing_interest": 5.0,
+                    "refinancing_interest": 4.39,
                     "length_change": 7,
                     "extra_principal": 0,
                 }
@@ -231,7 +245,7 @@ def add_variant():
     st.session_state.refinance_variants.append(
         {
             "id": new_id,
-            "refinancing_interest": 5.0,
+            "refinancing_interest": 4.39,
             "length_change": 0,
             "extra_principal": 0,
         }
@@ -290,7 +304,7 @@ st.markdown(
     "<style>.block-container { max-width: 67.5rem !important; margin: 0 auto; }</style>",
     unsafe_allow_html=True,
 )
-st.title("Kalkulačka refinancování hypotéky")
+st.markdown("<h1 style='text-align: center;'>Kalkulačka refinancování hypotéky</h1>", unsafe_allow_html=True)
 st.markdown(
     "Porovnejte různé varianty refinancování vaší hypotéky a zjistěte, kolik můžete ušetřit. "
     "Kalkulačka vám ukáže, jak se změní vaše splátky při novém úroku nebo délce splácení, "
@@ -308,7 +322,17 @@ st.markdown(
 with st.container(border=True):
     st.markdown("**Původní hypotéka**")
     col1, col2, col3, col4 = st.columns(4)
-    home_value = col1.number_input("Splácená částka", min_value=0, value=_qp_int("principal", 2_500_000))
+    _default_principal = _qp_int("principal", 2_500_000)
+    if "principal_text" not in st.session_state:
+        st.session_state.principal_text = _format_thousands(_default_principal)
+
+    def _on_principal_change():
+        raw = st.session_state.principal_text
+        parsed = max(_parse_int_from_text(raw, _default_principal), 0)
+        st.session_state.principal_text = _format_thousands(parsed)
+
+    col1.text_input("Splácená částka [Kč]", key="principal_text", on_change=_on_principal_change)
+    home_value = max(_parse_int_from_text(st.session_state.principal_text, _default_principal), 0)
     old_loan_length = col2.number_input("Délka splácení [roky]", min_value=2, value=_qp_int("term", 30))
     old_interest_rate = col3.number_input("Úrok [%]", min_value=0.1, value=_qp_float("rate", 1.69)) / 100
     refinancing_year_options = list(range(1, old_loan_length))
@@ -344,6 +368,10 @@ with st.container(border=True):
         )
     if risk_choice == "custom":
         FIXED_INTEREST_RATES["custom"] = custom_rate / 100
+    invest_after_payoff = st.checkbox(
+        "Po splacení kratší varianty investovat uvolněnou splátku",
+        value=_qp_str("invest_after", "0") == "1",
+    )
 
 with st.container(border=True):
     st.markdown("**Zobrazení hodnot**")
@@ -390,27 +418,40 @@ for variant_index, variant in enumerate(st.session_state.refinance_variants):
         else:
             st.markdown(f"**Varianta {variant_id}**")
 
-        input_col1, input_col2, input_col3 = st.columns(3)
-        refinancing_interest_pct = input_col1.number_input(
-            "Nový úrok [%]",
-            min_value=0.1,
-            key=rate_key,
-        )
-        if st.session_state[change_key] < min_change:
-            st.session_state[change_key] = min_change
-        length_change = input_col2.number_input(
-            "Přidání/odebrání let k původní délce",
-            min_value=min_change,
-            value=int(st.session_state[change_key]),
-            key=change_key,
-        )
-        extra_principal = input_col3.number_input(
-            "Navýšení hypotéky [Kč]",
-            min_value=0,
-            value=int(st.session_state[extra_key]),
-            step=50_000,
-            key=extra_key,
-        )
+        is_first_variant = variant_index == 0
+        if is_first_variant:
+            refinancing_interest_pct = st.number_input(
+                "Nový úrok [%]",
+                min_value=0.1,
+                key=rate_key,
+            )
+            length_change = 0
+            extra_principal = 0
+            st.session_state[change_key] = 0
+            st.session_state[extra_key] = 0
+        else:
+            input_col1, input_col2, input_col3 = st.columns(3)
+            refinancing_interest_pct = input_col1.number_input(
+                "Nový úrok [%]",
+                min_value=0.1,
+                key=rate_key,
+            )
+            if st.session_state[change_key] < min_change:
+                st.session_state[change_key] = min_change
+            length_change = input_col2.number_input(
+                "Přidání/odebrání let k původní délce",
+                min_value=max(min_change, -50),
+                max_value=50,
+                value=int(st.session_state[change_key]),
+                key=change_key,
+            )
+            extra_principal = input_col3.number_input(
+                "Navýšení hypotéky [Kč]",
+                min_value=0,
+                value=int(st.session_state[extra_key]),
+                step=50_000,
+                key=extra_key,
+            )
         new_loan_length = old_loan_length + int(length_change)
 
         generated_label = RefinanceVariant(
@@ -450,6 +491,7 @@ _new_params = {
     "mode": display_mode,
     "inflation": str(round(inflation * 100, 4)),
     "variants": _variants_json,
+    "invest_after": "1" if invest_after_payoff else "0",
 }
 if {k: st.query_params.get(k) for k in _new_params} != _new_params:
     st.query_params.update(_new_params)
@@ -475,6 +517,7 @@ try:
             refinancing_year=int(refinancing_year),
             variants=variant_configs,
             risk_choice=risk_choice,
+            invest_after_payoff=invest_after_payoff,
         )
     )
 except ValueError as exc:

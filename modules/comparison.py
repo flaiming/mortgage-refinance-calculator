@@ -102,6 +102,7 @@ def _extend_variant_to_common_horizon(
     result: ScenarioResult,
     common_end_month: int,
     risk_choice: str,
+    invest_after_payoff: bool = True,
 ) -> ScenarioResult:
     variant_end_month = int(result.schedule_df["month"].max())
     if variant_end_month >= common_end_month:
@@ -115,9 +116,10 @@ def _extend_variant_to_common_horizon(
     last_tax_savings = float(extended_df["tax_savings_cumulative"].iloc[-1])
     current_investment_value = float(extended_df["investment_values"].iloc[-1])
     monthly_rate = FIXED_INTEREST_RATES[risk_choice] / 12
+    monthly_contribution = float(result.monthly_payment) if invest_after_payoff else 0.0
     additional_rows = []
     for month in range(variant_end_month + 1, common_end_month + 1):
-        current_investment_value = (current_investment_value + float(result.monthly_payment)) * (1 + monthly_rate)
+        current_investment_value = (current_investment_value + monthly_contribution) * (1 + monthly_rate)
         additional_rows.append(
             {
                 "month": month,
@@ -299,6 +301,7 @@ def build_variant_results(
     refinancing_year: int,
     variants: list[RefinanceVariant],
     risk_choice: str,
+    invest_after_payoff: bool = True,
 ) -> list[ScenarioResult]:
     results_by_group: list[ScenarioResult] = []
     grouped_variants: dict[float, list[RefinanceVariant]] = {}
@@ -334,7 +337,7 @@ def build_variant_results(
 
     common_end_month = max((int(result.schedule_df["month"].max()) for result in results_by_group), default=0)
     results_by_group = [
-        _extend_variant_to_common_horizon(result, common_end_month, risk_choice)
+        _extend_variant_to_common_horizon(result, common_end_month, risk_choice, invest_after_payoff)
         for result in results_by_group
     ]
 
@@ -363,9 +366,13 @@ def build_graph_dataframe(results: list[ScenarioResult], refinancing_year: int |
         balance_series = schedule_df["balance"]
         if result.is_baseline and refinancing_cutoff_month is not None:
             balance_series = balance_series.where(balance_series.index <= refinancing_cutoff_month)
+        balance_series = balance_series.copy()
+        balance_series[balance_series <= 0] = float("nan")
         graph_data[f"{result.name} - zůstatek"] = balance_series
         if not result.is_baseline and schedule_df["investment_values"].max() > 0:
-            graph_data[f"{result.name} - investice"] = schedule_df["investment_values"]
+            inv_series = schedule_df["investment_values"].copy()
+            inv_series[inv_series <= 0] = float("nan")
+            graph_data[f"{result.name} - investice"] = inv_series
 
     graph_df = pd.DataFrame(graph_data)
     graph_df.index.name = "Měsíc"
