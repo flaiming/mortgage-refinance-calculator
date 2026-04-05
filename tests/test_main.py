@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from main import format_summary_dataframe, rank_refinance_variants
+from api.formatting import format_summary_dataframe, rank_refinance_variants
 
 
 def test_format_summary_dataframe_handles_nan_currency_values():

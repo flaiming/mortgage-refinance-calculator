@@ -1,9 +1,9 @@
-"""Tests for input interactions in the Streamlit app."""
+"""Tests for input interactions in the app."""
 from conftest import wait_for_app_ready, set_number_input, get_segmented_button
 
 
 def _get_summary_table_text(page):
-    table = page.locator('[data-testid="stTable"]').first
+    table = page.locator('[data-testid="table"]').first
     table.wait_for(state="visible", timeout=10000)
     return table.text_content()
 
@@ -25,7 +25,7 @@ def test_change_urok(app_page):
 def test_change_investment_strategy(app_page):
     summary_before = _get_summary_table_text(app_page)
     # Open the Strategie selectbox
-    selectbox = app_page.locator('[data-testid="stSelectbox"]', has_text="Strategie")
+    selectbox = app_page.locator('[data-testid="selectbox"]', has_text="Strategie")
     selectbox.first.click()
     # Pick "Dynamická (8 % ročně)" from the dropdown
     option = app_page.locator('[role="option"]', has_text="Dynamická")
@@ -47,7 +47,7 @@ def test_toggle_nominalne_realne(app_page):
 def test_change_varianta2_novy_urok(app_page):
     summary_before = _get_summary_table_text(app_page)
     # Find all "Nový úrok" number inputs — second one is Varianta 2
-    number_inputs = app_page.locator('[data-testid="stNumberInput"]')
+    number_inputs = app_page.locator('[data-testid="number-input"]')
     novy_urok_inputs = []
     for i in range(number_inputs.count()):
         ni = number_inputs.nth(i)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from modules.investing_strategies import FIXED_INTEREST_RATES, InvestStrategies
+from modules.investing_strategies import FIXED_INTEREST_RATES
 
 
 @dataclass

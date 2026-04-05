@@ -1,4 +1,4 @@
-"""Tests for the default state of the Streamlit app (no URL params)."""
+"""Tests for the default state of the app (no URL params)."""
 from conftest import wait_for_app_ready
 
 
@@ -14,7 +14,7 @@ def test_h1_heading_visible(app_page):
 
 
 def test_plotly_chart_rendered(app_page):
-    chart = app_page.locator('[data-testid="stPlotlyChart"]').first
+    chart = app_page.locator('[data-testid="chart"]').first
     chart.wait_for(state="visible", timeout=10000)
     assert chart.is_visible()
 
@@ -38,7 +38,7 @@ def test_doporuceni_subheader(app_page):
 
 
 def test_summary_table_exists_with_content(app_page):
-    tables = app_page.locator('[data-testid="stTable"]')
+    tables = app_page.locator('[data-testid="table"]')
     tables.first.wait_for(state="visible", timeout=10000)
     assert tables.count() >= 1
     text = tables.first.text_content()
@@ -46,7 +46,7 @@ def test_summary_table_exists_with_content(app_page):
 
 
 def test_at_least_one_milestone_table(app_page):
-    tables = app_page.locator('[data-testid="stTable"]')
+    tables = app_page.locator('[data-testid="table"]')
     tables.first.wait_for(state="visible", timeout=10000)
     assert tables.count() >= 2
 

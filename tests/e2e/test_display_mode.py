@@ -4,14 +4,14 @@ from conftest import wait_for_app_ready, set_number_input, get_segmented_button,
 
 
 def _get_table_text(page):
-    table = page.locator("[data-testid='stTable']").first
+    table = page.locator("[data-testid='table']").first
     table.wait_for(state="visible", timeout=10000)
     return table.text_content()
 
 
 def test_default_is_nominal(app_page):
-    # Active segmented button has data-testid ending in "Active"
-    active_btn = app_page.locator('[data-testid="stBaseButton-segmented_controlActive"]').first
+    # Active segmented button has data-testid "segmented-button-active"
+    active_btn = app_page.locator('[data-testid="segmented-button-active"]').first
     assert "Nominálně" in active_btn.text_content()
 
 
@@ -32,7 +32,7 @@ def test_switch_to_real(app_page):
     expect(inflation_input).to_be_enabled()
 
     # Verify Reálně is now the active button
-    active_btn = app_page.locator('[data-testid="stBaseButton-segmented_controlActive"]').first
+    active_btn = app_page.locator('[data-testid="segmented-button-active"]').first
     assert "Reálně" in active_btn.text_content()
 
     # Verify table values changed

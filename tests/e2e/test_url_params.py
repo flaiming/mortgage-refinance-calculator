@@ -6,14 +6,14 @@ from playwright.sync_api import expect
 from conftest import wait_for_app_ready, set_number_input, get_number_input
 
 
-def test_url_params_preload(streamlit_server, page):
-    url = streamlit_server + "/?principal=3000000&term=25&rate=2.5&refi_year=5"
+def test_url_params_preload(app_server, page):
+    url = app_server + "/?principal=3000000&term=25&rate=2.5&refi_year=5"
     page.goto(url)
     page.wait_for_selector("h1", timeout=15000)
     wait_for_app_ready(page)
 
     # Verify "Splácená částka" shows "3 000 000"
-    principal_input = page.locator('[data-testid="stTextInput"] input').first
+    principal_input = page.locator('[data-testid="text-input"] input').first
     expect(principal_input).to_have_value("3 000 000")
 
     # Verify "Délka splácení" shows 25
@@ -26,11 +26,11 @@ def test_url_params_preload(streamlit_server, page):
     assert float(value) == 2.5
 
 
-def test_url_params_variants(streamlit_server, page):
+def test_url_params_variants(app_server, page):
     variants = [{"rate": 5.0, "years": 0, "extra": 0}]
     variants_json = json.dumps(variants, separators=(",", ":"))
     encoded = urllib.parse.quote(variants_json)
-    url = f"{streamlit_server}/?variants={encoded}"
+    url = f"{app_server}/?variants={encoded}"
     page.goto(url)
     page.wait_for_selector("h1", timeout=15000)
     wait_for_app_ready(page)
