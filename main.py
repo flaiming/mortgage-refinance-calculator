@@ -299,7 +299,15 @@ def _qp_variants() -> list[dict] | None:
         return None
 
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Kalkulačka refinancování hypotéky",
+    page_icon="🏠",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        "About": "Kalkulačka pro porovnání variant refinancování hypotéky. Vytvořeno v rámci Engeto Hackathonu.",
+    },
+)
 st.markdown(
     "<style>.block-container { max-width: 67.5rem !important; margin: 0 auto; }</style>",
     unsafe_allow_html=True,
