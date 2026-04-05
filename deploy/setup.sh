@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR="$REPO_DIR/.venv"
+FRONTEND_DIR="$REPO_DIR/frontend"
 SERVICE_NAME="hypo"
 NGINX_CONF="$REPO_DIR/deploy/hypo.vojtechoram.cz.nginx.conf"
 
@@ -22,6 +23,14 @@ if [ ! -f "$VENV_DIR/bin/pip" ]; then
 fi
 "$VENV_DIR/bin/pip" install --upgrade pip -q
 "$VENV_DIR/bin/pip" install -r "$REPO_DIR/requirements.txt" -q
+echo "    Done."
+
+# Frontend build
+echo "==> Building frontend"
+cd "$FRONTEND_DIR"
+npm ci --silent
+npm run build
+cd "$REPO_DIR"
 echo "    Done."
 
 # Systemd

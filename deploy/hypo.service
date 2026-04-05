@@ -1,16 +1,14 @@
 [Unit]
-Description=Mortgage Refinance Calculator (Streamlit)
+Description=Mortgage Refinance Calculator (FastAPI)
 After=network.target
 
 [Service]
 User=flaim
 WorkingDirectory=/www/hypo
 EnvironmentFile=/www/hypo/.env
-ExecStart=/www/hypo/.venv/bin/streamlit run main.py \
-    --server.port=8501 \
-    --server.address=127.0.0.1 \
-    --server.headless=true \
-    --browser.gatherUsageStats=false
+ExecStart=/www/hypo/.venv/bin/uvicorn api.app:app \
+    --host 127.0.0.1 \
+    --port 8501
 Restart=on-failure
 RestartSec=5
 
