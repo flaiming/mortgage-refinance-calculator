@@ -18,12 +18,12 @@ export const faq: FaqItem[] = [
   {
     question: 'Je lepší zachovat délku splácení, nebo ji prodloužit?',
     answer:
-      'Záleží na tom, co s nižší splátkou uděláte. Delší splatnost znamená víc zaplacených úroků. Pokud ale rozdíl ve splátce pravidelně investujete a investice vydělávají víc, než kolik vás stojí úrok hypotéky po odečtení daňové úspory, může delší varianta vyjít lépe. Kalkulačka ukáže, ve kterém měsíci by naspořené investice stačily na doplacení zbývajícího dluhu.',
+      'Záleží na tom, co s nižší splátkou uděláte. Delší splatnost znamená víc zaplacených úroků. Pokud ale rozdíl ve splátce pravidelně investujete a investice vydělávají víc, než kolik vás stojí úrok hypotéky po odečtení daňové úspory, může delší varianta vyjít lépe. Kratší varianta zase po splacení hypotéky investuje celý měsíční rozpočet, tedy nejvyšší z nových splátek. Kalkulačka obě cesty porovná ve stejném horizontu a se stejnou měsíční částkou a ukáže, ve kterém měsíci by naspořené investice stačily na doplacení zbývajícího dluhu.',
   },
   {
-    question: 'Co znamenají řádky Bilance a Zisk/ztráta ve výsledcích?',
+    question: 'Podle čeho kalkulačka vybírá nejvýhodnější variantu?',
     answer:
-      'Bilance je hodnota investic plus dosavadní daňová úspora minus zbývající dluh. Zisk/ztráta od bilance odečítá všechny zaplacené úroky. Varianta s nejvyšším ziskem (nebo nejmenší ztrátou) na konci horizontu je pro vás finančně nejvýhodnější a v tabulkách je zvýrazněná zeleně.',
+      'Podle čistých nákladů na konci nejdelší varianty. Čisté náklady jsou zaplacené úroky minus daňová úspora a minus výnos investic, tedy to, o kolik investice vzrostly nad peníze, které jste do nich sami vložili. Všechny varianty přitom měsíčně utratí stejnou částku, nejvyšší z nových splátek, takže nejnižší čisté náklady znamenají nejvíc peněz na konci. Nejvýhodnější varianta je v tabulkách zvýrazněná zeleně.',
   },
   {
     question: 'Jak kalkulačka počítá s odpočtem úroků z daní?',
@@ -38,7 +38,7 @@ export const faq: FaqItem[] = [
   {
     question: 'Jaký je rozdíl mezi nominálním a reálným zobrazením?',
     answer:
-      'Nominální hodnoty jsou částky tak, jak je skutečně zaplatíte. Reálné hodnoty přepočítávají budoucí částky na dnešní kupní sílu podle zadané inflace. Splátka 10 000 Kč za dvacet let má reálně menší váhu než dnes.',
+      'Nominální hodnoty jsou částky tak, jak je skutečně zaplatíte. Reálné hodnoty přepočítávají každou platbu na kupní sílu v době sjednání hypotéky podle zadané inflace. Splátka 10 000 Kč za dvacet let má reálně menší váhu než dnes. Proto reálné zobrazení ukazuje i inflační úlevu na jistině: dluh splácíte penězi, které mezitím ztratily hodnotu, a u delší splatnosti je tahle úleva větší.',
   },
   {
     question: 'Můžu výpočet uložit nebo poslat dál?',

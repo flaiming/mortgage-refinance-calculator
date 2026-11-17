@@ -20,9 +20,9 @@ export function balanceAfter(principal: number, ratePct: number, months: number,
 
 export interface VariantPayment {
   payment: number | null
-  /** Index of the variant whose payment is the baseline for investing (shortest term with the same rate). */
+  /** Index of the variant with the highest payment; that payment is the common monthly budget. */
   referenceIndex: number
-  /** Monthly amount invested by this variant (0 for the reference itself). */
+  /** Monthly amount this variant invests: the budget minus its own payment. */
   savings: number
 }
 
@@ -33,35 +33,30 @@ export function computeVariantPayments(
   refinancingYear: number,
   variants: VariantInput[],
 ): { originalPayment: number | null; variants: VariantPayment[] } {
-  const valid = principal > 0 && ratePct > 0 && termYears > 1 && refinancingYear > 0 && refinancingYear < termYears
+  // Same limits as api/models.py
+  const valid = principal > 0 && ratePct >= 0.1 && ratePct <= 30 && termYears > 1 && termYears <= 50 && refinancingYear > 0 && refinancingYear < termYears
   const originalPayment = valid ? annuityPayment(principal, ratePct, termYears * 12) : null
   const balance = valid ? balanceAfter(principal, ratePct, termYears * 12, refinancingYear * 12) : 0
 
   const payments = variants.map(v => {
     const years = termYears - refinancingYear + v.length_change
-    if (!valid || years <= 0 || !(v.refinancing_interest > 0)) return null
+    if (!valid || years <= 0 || years > 50 || !(v.refinancing_interest >= 0.1) || v.refinancing_interest > 30) return null
     return annuityPayment(balance + (v.extra_principal || 0), v.refinancing_interest, years * 12)
   })
 
-  // Same grouping as modules/comparison.py: per rate, the shortest variant is the reference.
-  const referenceFor = (i: number) => {
-    let ref = i
-    variants.forEach((v, j) => {
-      if (v.refinancing_interest !== variants[i].refinancing_interest) return
-      if (v.length_change < variants[ref].length_change) ref = j
-      else if (v.length_change === variants[ref].length_change && j < ref) ref = j
-    })
-    return ref
-  }
+  // Same as modules/comparison.py: every variant spends the highest payment as its monthly
+  // budget and invests what is left after its own payment.
+  let ref = -1
+  payments.forEach((pay, i) => {
+    if (pay !== null && (ref === -1 || pay > (payments[ref] as number))) ref = i
+  })
+  const budget = ref === -1 ? null : payments[ref]
 
   return {
     originalPayment,
-    variants: variants.map((_, i) => {
-      const ref = referenceFor(i)
-      const pay = payments[i]
-      const refPay = payments[ref]
-      const savings = ref !== i && pay !== null && refPay !== null ? Math.max(0, refPay - pay) : 0
-      return { payment: pay, referenceIndex: ref, savings }
+    variants: payments.map(pay => {
+      const leftover = pay !== null && budget !== null ? budget - pay : 0
+      return { payment: pay, referenceIndex: ref, savings: Math.max(0, leftover) }
     }),
   }
 }

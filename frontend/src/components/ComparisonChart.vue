@@ -21,7 +21,7 @@ const props = defineProps<{
 }>()
 
 // First series is always the "no refinancing" baseline, so it gets the neutral slate.
-const COLORS = ['#7b8798', '#0e6a78', '#d4553a', '#c98a1c', '#5b5fa8', '#2f8a57']
+const COLORS = ['#7b8798', '#d4553a', '#0e6a78', '#c98a1c', '#5b5fa8', '#2f8a57']
 
 ChartJS.defaults.font.family = '"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif'
 ChartJS.defaults.color = '#566273'

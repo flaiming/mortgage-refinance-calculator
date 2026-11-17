@@ -33,6 +33,8 @@ export interface GraphResponse {
 export interface MilestoneData {
   label: string
   rows: Record<string, any>[]
+  /** Scenario with the lowest net cost, decided by the API on unrounded values */
+  best: string | null
 }
 
 export interface SummaryResponse {

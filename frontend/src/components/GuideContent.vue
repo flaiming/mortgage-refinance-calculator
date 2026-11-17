@@ -4,8 +4,8 @@ import { faq } from '../content/faq'
 const steps = [
   'Sestaví splátkový kalendář původní hypotéky s anuitní splátkou až do roku, kdy končí fixace.',
   'Zbývající dluh přepočítá s novou sazbou a zvolenou splatností pro každou variantu, případně navýšený o další půjčenou částku.',
-  'U variant s delší splatností investuje každý měsíc rozdíl oproti splátce nejkratší varianty se stejnou sazbou, a to se zvoleným ročním výnosem.',
-  'Připočte daňovou úsporu z odpočtu úroků a porovná zaplacené úroky, zbývající dluh a hodnotu investic.',
+  'Nejvyšší z nových splátek bere jako měsíční rozpočet, který utratí každá varianta. Kdo splácí méně, rozdíl každý měsíc investuje se zvoleným ročním výnosem. Kdo splatí dřív, investuje pak celý rozpočet až do konce nejdelší varianty.',
+  'Pro každou variantu spočítá čisté náklady: zaplacené úroky minus daňová úspora z odpočtu úroků a minus výnos investic. Protože všechny varianty utratí stejně, nejnižší čisté náklady znamenají, že vám na konci zůstane nejvíc peněz.',
 ]
 </script>
 
@@ -47,9 +47,11 @@ const steps = [
         Druhou cestou je prodloužit splatnost: splátka bude nižší, na úrocích ale zaplatíte víc.
       </p>
       <p>
-        Kalkulačka předpokládá, že si na vyšší splátku nejkratší varianty můžete dovolit. Kdo zvolí
-        delší splatnost, rozdíl každý měsíc investuje. Pokud investice vynášejí víc, než stojí úrok hypotéky po odečtení
-        daňové úspory, delší splatnost se může vyplatit. Graf ukazuje, kdy investice dorovnají zbývající
+        Kalkulačka předpokládá, že si na nejvyšší ze splátek můžete dovolit, a se stejnou částkou počítá
+        u všech variant. Kdo zvolí delší splatnost, rozdíl každý měsíc investuje. Kdo splatí dřív, začne
+        pak investovat celý měsíční rozpočet, takže se všechny cesty porovnávají férově ve stejném horizontu.
+        Pokud investice vynášejí víc, než stojí úrok hypotéky po odečtení daňové úspory, delší splatnost
+        se vyplatí. Graf ukazuje, kdy investice dorovnají zbývající
         dluh, a tabulky porovnávají všechny varianty ve stejném časovém horizontu.
       </p>
     </div>

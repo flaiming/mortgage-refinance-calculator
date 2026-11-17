@@ -11,8 +11,8 @@ def test_format_summary_dataframe_handles_nan_currency_values():
             {
                 "Scénář": "Bez refinancování",
                 "Měsíční splátka": 10000.0,
-                "Měsíční úspora": 0.0,
-                "Referenční splátka pro investici": math.nan,
+                "Měsíčně investováno": 0.0,
+                "Měsíční rozpočet": math.nan,
                 "Délka hypotéky [roky]": 30,
                 "Průměrná roční daňová úspora": 5000.0,
                 "Měsíc plného doplacení investicí": math.nan,
@@ -22,7 +22,7 @@ def test_format_summary_dataframe_handles_nan_currency_values():
 
     formatted_df = format_summary_dataframe(summary_df)
 
-    assert formatted_df.loc[0, "Referenční splátka pro investici"] == "-"
+    assert formatted_df.loc[0, "Měsíční rozpočet"] == "-"
     assert formatted_df.loc[0, "Měsíční splátka"] == "10 000 Kč"
     assert formatted_df.loc[0, "Měsíc plného doplacení investicí"] == "Nedosaženo"
 
@@ -49,8 +49,8 @@ def test_rank_refinance_variants_ignores_baseline_and_assigns_order():
             "Měsíc 444 (37. rok)",
             pd.DataFrame(
                 [
-                    {"Scénář": "5.00 % | 30 let", "Zisk/ztráta": -70000.0, "Investice": 100000.0},
-                    {"Scénář": "5.00 % | 37 let", "Zisk/ztráta": 65000.0, "Investice": 250000.0},
+                    {"Scénář": "5.00 % | 30 let", "Čisté náklady": 2_100_000.0, "Hodnota investic": 100000.0},
+                    {"Scénář": "5.00 % | 37 let", "Čisté náklady": 1_950_000.0, "Hodnota investic": 250000.0},
                 ]
             ),
         )

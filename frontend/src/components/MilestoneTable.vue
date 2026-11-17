@@ -4,6 +4,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   label: string
   rows: Record<string, any>[]
+  best: string | null
 }>()
 
 const scenarios = computed(() => props.rows.map(r => r['Scénář'] || ''))
@@ -13,22 +14,8 @@ const rowKeys = computed(() => {
   return Object.keys(props.rows[0]).filter(k => k !== 'Scénář')
 })
 
-// Find the index of the best variant (highest "Zisk/ztráta" value)
-const bestIndex = computed(() => {
-  if (!props.rows.length) return -1
-  let best = -1
-  let bestVal = -Infinity
-  for (let i = 0; i < props.rows.length; i++) {
-    const raw = props.rows[i]['Zisk/ztráta']
-    if (raw === undefined) continue
-    const num = typeof raw === 'number' ? raw : Number(String(raw).replace(/\s/g, '').replace(/[^0-9,.-]/g, '').replace(',', '.'))
-    if (!isNaN(num) && num > bestVal) {
-      bestVal = num
-      best = i
-    }
-  }
-  return best
-})
+// Lowest "Čisté náklady"; the API compares unrounded numbers, the cells are already formatted
+const bestIndex = computed(() => scenarios.value.indexOf(props.best ?? ''))
 </script>
 
 <template>

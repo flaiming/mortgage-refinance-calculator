@@ -9,19 +9,12 @@ from modules.comparison import (
     build_display_milestone_dataframes,
     build_display_summary_dataframe,
     build_variant_results,
+    best_scenario,
 )
-from modules.investing_strategies import FIXED_INTEREST_RATES
 
 
 def _compute(req: CalculateRequest):
     """Run all calculations. Returns (results, graph_df, summary_df, milestone_dfs, ranked_df, recommendation)."""
-    # IMPORTANT: Don't mutate global FIXED_INTEREST_RATES -- make a local copy
-    rates = dict(FIXED_INTEREST_RATES)
-    if req.strategy == "custom" and req.custom_rate is not None:
-        rates["custom"] = req.custom_rate / 100
-        # Temporarily set global for modules that read it
-        FIXED_INTEREST_RATES["custom"] = req.custom_rate / 100
-
     interest_rate = req.rate / 100
     inflation = req.inflation / 100
 
@@ -42,7 +35,7 @@ def _compute(req: CalculateRequest):
         original_term=req.term,
         refinancing_year=req.refinancing_year,
         variants=variant_configs,
-        risk_choice=req.strategy,
+        annual_return=req.annual_return,
         invest_after_payoff=req.invest_after_payoff,
     ))
 
@@ -60,11 +53,28 @@ def _compute(req: CalculateRequest):
         if not best_row.empty:
             d = best_row.iloc[0]
             recommendation = (
-                f"Nejvýhodnější varianta je **{best['Scénář']}** "
-                f"se ziskem/ztrátou {format_currency(d['Zisk/ztráta'])} na konci horizontu ({last_label}). "
-                "Porovnání je počítané ve stejném horizontu jako nejdelší zadaná varianta; "
-                "kratší varianta po splacení hypotéky dál investuje svou bývalou měsíční splátku."
+                f"Nejvýhodnější varianta je **{best['Scénář']}**: čisté náklady "
+                f"{format_currency(d['Čisté náklady'])} na konci horizontu ({last_label})"
             )
+            runner_up = ranked_df.iloc[1]
+            runner_row = last_df[last_df["Scénář"] == runner_up["Scénář"]]
+            if not runner_row.empty:
+                diff = float(runner_row.iloc[0]["Čisté náklady"]) - float(d["Čisté náklady"])
+                recommendation += f", o {format_currency(diff)} méně než **{runner_up['Scénář']}**"
+            # Same figure as the summary table, i.e. deflated in real mode
+            budget = best.get("Měsíční rozpočet")
+            recommendation += (
+                ". Všechny varianty počítají se stejným měsíčním rozpočtem"
+                + (f" {format_currency(budget)}" if budget else "")
+                + ", tedy s nejvyšší z nových splátek. Kdo splácí méně, rozdíl investuje"
+            )
+            if req.invest_after_payoff:
+                recommendation += " a po splacení hypotéky investuje celý rozpočet až do konce nejdelší varianty."
+            else:
+                recommendation += (
+                    ". Po splacení hypotéky se uvolněné peníze neinvestují, "
+                    "takže kratší varianty jsou v porovnání znevýhodněné."
+                )
             if pd.notna(best.get("Měsíc plného doplacení investicí")):
                 recommendation += f" Investice dorovná hypotéku v měsíci {int(best['Měsíc plného doplacení investicí'])}."
 
@@ -85,9 +95,10 @@ def build_graph_response(req: CalculateRequest) -> GraphResponse:
         if result.is_baseline or result.payoff_month_with_investment is None:
             continue
         month = result.payoff_month_with_investment
-        row = result.schedule_df.loc[result.schedule_df["month"] == month]
-        if not row.empty:
-            value = float(row.iloc[0]["investment_values"])
+        column = f"{result.name} - investice"
+        if column in graph_df.columns and month in graph_df.index and pd.notna(graph_df.loc[month, column]):
+            # Same (possibly deflated) value as the plotted series
+            value = float(graph_df.loc[month, column])
             payoff_markers.append(PayoffMarker(
                 x=month, y=value, variant=result.name,
                 label=f"Splacení ({month}. m)",
@@ -105,7 +116,7 @@ def build_summary_response(req: CalculateRequest) -> SummaryResponse:
     milestones = []
     for label, mdf in milestone_dfs:
         formatted = format_milestone_dataframe(mdf)
-        milestones.append({"label": label, "rows": formatted.to_dict(orient="records")})
+        milestones.append({"label": label, "rows": formatted.to_dict(orient="records"), "best": best_scenario(mdf)})
 
     ranked = ranked_df.to_dict(orient="records") if not ranked_df.empty else []
     # Convert NaN to None for JSON

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { VariantInput } from '../types'
 import { computeVariantPayments } from '../utils/mortgage'
+import { MAX_VARIANTS } from '../composables/useCalculator'
 import VariantCard from './VariantCard.vue'
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const props = defineProps<{
   term: number
   refinancingYear: number
   expectedReturn: number | null
+  investAfterPayoff: boolean
 }>()
 
 const emit = defineEmits<{
@@ -21,6 +23,11 @@ const emit = defineEmits<{
 
 const payments = computed(() =>
   computeVariantPayments(props.principal, props.rate, props.term, props.refinancingYear, props.variants),
+)
+
+// Variants paid off before the longest one invest the whole budget for the remaining years
+const longestYears = computed(() =>
+  Math.max(...props.variants.map((v, i) => (payments.value.variants[i]?.payment != null ? props.term + v.length_change : 0))),
 )
 
 const updateVariant = (index: number, variant: VariantInput) => {
@@ -39,6 +46,7 @@ const updateVariant = (index: number, variant: VariantInput) => {
         každý měsíc investovat. Kalkulačka spočítá, jestli vás to nakonec vyjde lépe než splácet rychleji.
       </p>
       <p class="text-muted">
+        Aby bylo srovnání férové, všechny varianty měsíčně utratí stejně: kolik činí nejvyšší z nových splátek.
         Varianta 1 zachová původní délku splácení. V dalších variantách splatnost prodlužte, případně si půjčte víc.
       </p>
     </div>
@@ -55,11 +63,16 @@ const updateVariant = (index: number, variant: VariantInput) => {
         :referencePayment="payments.variants[payments.variants[i]?.referenceIndex ?? i]?.payment ?? null"
         :originalPayment="payments.originalPayment"
         :expectedReturn="expectedReturn"
+        :investsAfterPayoff="investAfterPayoff && term + v.length_change < longestYears"
         @update="updateVariant(i, $event)"
         @remove="emit('remove', i)"
       />
     </div>
+    <p v-if="variants.length >= MAX_VARIANTS" class="text-sm text-muted">
+      Porovnat jde nejvýš {{ MAX_VARIANTS }} variant.
+    </p>
     <button
+      v-else
       type="button"
       @click="emit('add')"
       class="w-full border border-dashed border-slate-400 rounded-lg p-2.5 text-sm font-medium text-petrol-700 hover:border-petrol-600 hover:bg-petrol-50 transition-colors"

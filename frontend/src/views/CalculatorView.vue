@@ -14,7 +14,7 @@ import SummaryTable from '../components/SummaryTable.vue'
 import MilestoneTable from '../components/MilestoneTable.vue'
 import Recommendation from '../components/Recommendation.vue'
 
-const { state, graphData, summaryData, isLoading, addVariant, removeVariant } = useCalculator()
+const { state, graphData, summaryData, isLoading, errorMessage, addVariant, removeVariant } = useCalculator()
 
 const STRATEGY_RETURNS: Record<string, number> = { safe: 4, medium: 6, risky: 8 }
 const expectedReturn = computed(() =>
@@ -51,6 +51,7 @@ const updateVariants = (newVariants: any[]) => {
             :rate="state.rate.value"
             :refinancingYear="state.refinancing_year.value"
             :expectedReturn="expectedReturn"
+            :investAfterPayoff="state.invest_after_payoff.value"
             :term="state.term.value"
             @add="addVariant"
             @remove="removeVariant"
@@ -83,6 +84,14 @@ const updateVariants = (newVariants: any[]) => {
         <p class="text-sm text-muted mb-5">
           Plná čára je zbývající dluh, přerušovaná hodnota investic. Kosočtverec značí měsíc, kdy investice stačí na doplacení hypotéky.
         </p>
+        <p
+          v-if="errorMessage"
+          data-testid="calc-error"
+          role="alert"
+          class="mb-5 rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-900"
+        >
+          {{ errorMessage }}
+        </p>
         <ComparisonChart :graphData="graphData" />
 
         <div class="mt-10" v-if="summaryData">
@@ -102,6 +111,7 @@ const updateVariants = (newVariants: any[]) => {
               :key="i"
               :label="ms.label"
               :rows="ms.rows"
+              :best="ms.best"
             />
           </div>
         </div>
