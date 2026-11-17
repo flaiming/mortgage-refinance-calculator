@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useCalculator } from '../composables/useCalculator'
 import SiteHeader from '../components/SiteHeader.vue'
 import SiteFooter from '../components/SiteFooter.vue'
@@ -14,6 +15,11 @@ import MilestoneTable from '../components/MilestoneTable.vue'
 import Recommendation from '../components/Recommendation.vue'
 
 const { state, graphData, summaryData, isLoading, addVariant, removeVariant } = useCalculator()
+
+const STRATEGY_RETURNS: Record<string, number> = { safe: 4, medium: 6, risky: 8 }
+const expectedReturn = computed(() =>
+  state.strategy.value === 'custom' ? state.custom_rate.value : STRATEGY_RETURNS[state.strategy.value] ?? null,
+)
 
 const updateVariants = (newVariants: any[]) => {
   state.variants.value = newVariants
@@ -41,6 +47,10 @@ const updateVariants = (newVariants: any[]) => {
           <VariantList
             :variants="state.variants.value"
             @update:variants="updateVariants"
+            :principal="state.principal.value"
+            :rate="state.rate.value"
+            :refinancingYear="state.refinancing_year.value"
+            :expectedReturn="expectedReturn"
             :term="state.term.value"
             @add="addVariant"
             @remove="removeVariant"

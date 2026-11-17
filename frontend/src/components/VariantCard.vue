@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { VariantInput } from '../types'
+import type { VariantPayment } from '../utils/mortgage'
 
 const props = defineProps<{
   variant: VariantInput
   index: number
   term: number
+  refinancingYear: number
   canDelete: boolean
+  payment: VariantPayment | null
+  referencePayment: number | null
+  originalPayment: number | null
+  expectedReturn: number | null
 }>()
 
 const emit = defineEmits<{
@@ -14,7 +20,18 @@ const emit = defineEmits<{
   remove: []
 }>()
 
-const minLengthChange = computed(() => -(props.term - 1))
+const minLengthChange = computed(() => -(props.term - props.refinancingYear - 1))
+const totalYears = computed(() => props.term + (props.variant.length_change || 0))
+
+const kc = (v: number) => Math.round(v).toLocaleString('cs-CZ') + ' Kč'
+
+const isReference = computed(() => props.payment?.referenceIndex === props.index)
+const savings = computed(() => props.payment?.savings ?? 0)
+const extraCost = computed(() => {
+  const p = props.payment?.payment
+  if (p == null || props.referencePayment == null || isReference.value) return 0
+  return Math.max(0, p - props.referencePayment)
+})
 
 const updateField = (field: keyof VariantInput, value: number) => {
   emit('update', { ...props.variant, [field]: value })
@@ -38,7 +55,7 @@ const updateField = (field: keyof VariantInput, value: number) => {
       </button>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
       <div data-testid="number-input">
         <label class="field-label">Nový úrok [%]</label>
         <input
@@ -52,7 +69,7 @@ const updateField = (field: keyof VariantInput, value: number) => {
       </div>
 
       <div v-if="index >= 1" data-testid="number-input">
-        <label class="field-label">Změna splatnosti [roky]</label>
+        <label class="field-label" title="Záporné číslo splatnost zkrátí">Prodloužit o [roky]</label>
         <input
           type="number"
           :value="variant.length_change"
@@ -61,6 +78,7 @@ const updateField = (field: keyof VariantInput, value: number) => {
           :max="50"
           class="field"
         />
+        <p class="mt-1 text-xs text-muted">Splatnost celkem {{ totalYears }} let</p>
       </div>
 
       <div v-if="index >= 1" data-testid="number-input">
@@ -75,5 +93,38 @@ const updateField = (field: keyof VariantInput, value: number) => {
         />
       </div>
     </div>
+
+    <!-- What this variant means for the monthly budget -->
+    <div v-if="payment?.payment == null" class="mt-4 text-sm text-red-700">
+      Splátku nejde spočítat. Zkontrolujte délku splatnosti a úrok.
+    </div>
+
+    <div
+      v-else-if="savings > 0"
+      data-testid="variant-savings"
+      class="mt-4 rounded-md border-l-4 border-amber bg-[#fdf3e1] px-4 py-3 text-sm leading-relaxed"
+    >
+      <p>
+        Splátka <strong>{{ kc(payment.payment) }}</strong>, tedy o
+        <strong class="text-petrol-900">{{ kc(savings) }} měsíčně méně</strong>
+        než u varianty {{ payment.referenceIndex + 1 }}.
+      </p>
+      <p class="mt-1 text-ink/80">
+        Ušetřenou částku kalkulačka každý měsíc investuje
+        <template v-if="expectedReturn != null">s výnosem {{ expectedReturn.toLocaleString('cs-CZ') }}&nbsp;% ročně</template>
+        <template v-else>se zvoleným výnosem</template>.
+        Ve výsledcích uvidíte, jestli to vynese víc než rychlejší splácení.
+      </p>
+    </div>
+
+    <p v-else-if="isReference" class="mt-4 text-sm">
+      Nová splátka <strong>{{ kc(payment.payment) }}</strong> měsíčně<template v-if="originalPayment != null"
+      ><span class="text-muted"> (dosud {{ kc(originalPayment) }})</span></template>.
+    </p>
+
+    <p v-else class="mt-4 text-sm">
+      Splátka <strong>{{ kc(payment.payment) }}</strong>, o {{ kc(extraCost) }} víc než u varianty
+      {{ payment.referenceIndex + 1 }}. Nic se neinvestuje, hypotéku ale splatíte dřív.
+    </p>
   </div>
 </template>

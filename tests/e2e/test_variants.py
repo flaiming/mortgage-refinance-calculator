@@ -9,7 +9,7 @@ def test_variant1_has_only_rate(app_page):
 
     text = section.text_content()
     assert "Nový úrok" in text
-    assert "Změna splatnosti" not in text
+    assert "Prodloužit o" not in text
     assert "Navýšení úvěru" not in text
 
 
@@ -19,7 +19,7 @@ def test_variant2_has_all_inputs(app_page):
 
     text = section.text_content()
     assert "Nový úrok" in text
-    assert "Změna splatnosti" in text
+    assert "Prodloužit o" in text
     assert "Navýšení úvěru" in text
 
 
@@ -37,7 +37,7 @@ def test_add_variant(app_page):
 
     text = section.text_content()
     assert "Nový úrok" in text
-    assert "Změna splatnosti" in text
+    assert "Prodloužit o" in text
     assert "Navýšení úvěru" in text
 
     # Verify Smazat button exists
