@@ -2,19 +2,23 @@ import { ref, watch } from 'vue'
 import type { VariantInput, CalculateRequest, GraphResponse, SummaryResponse } from '../types'
 import { useUrlSync } from './useUrlSync'
 
+// Defaults describe a typical mortgage refinanced in late 2026: a 5-year fixation signed in 2021
+// (avg. loan ~3.2M CZK, avg. rate 2.33 % per ČBA Hypomonitor) facing ~5.2 % today.
+export const DEFAULT_NEW_RATE = 5.2
+
 export function useCalculator() {
-  const principal = ref(2500000)
+  const principal = ref(3200000)
   const term = ref(30)
-  const rate = ref(1.69)
-  const refinancing_year = ref(7)
+  const rate = ref(2.3)
+  const refinancing_year = ref(5)
   const strategy = ref<string>('medium')
   const custom_rate = ref<number | null>(null)
   const invest_after_payoff = ref(false)
   const display_mode = ref<string>('nominal')
   const inflation = ref(2.0)
   const variants = ref<VariantInput[]>([
-    { refinancing_interest: 4.39, length_change: 0, extra_principal: 0 },
-    { refinancing_interest: 4.39, length_change: 7, extra_principal: 0 },
+    { refinancing_interest: DEFAULT_NEW_RATE, length_change: 0, extra_principal: 0 },
+    { refinancing_interest: DEFAULT_NEW_RATE, length_change: 5, extra_principal: 0 },
   ])
 
   const graphData = ref<GraphResponse | null>(null)
@@ -86,7 +90,7 @@ export function useCalculator() {
   fetchData()
 
   const addVariant = () => {
-    variants.value.push({ refinancing_interest: 4.39, length_change: 0, extra_principal: 0 })
+    variants.value.push({ refinancing_interest: DEFAULT_NEW_RATE, length_change: 0, extra_principal: 0 })
   }
 
   const removeVariant = (index: number) => {

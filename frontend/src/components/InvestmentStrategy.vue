@@ -44,16 +44,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 </script>
 
 <template>
-  <div class="border border-gray-300 rounded-lg p-4 mb-4">
-    <h3 class="text-lg font-semibold mb-3">Investiční strategie</h3>
+  <div class="panel">
+    <h3 class="text-lg font-semibold mb-4">Investiční strategie</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div data-testid="selectbox" ref="dropdownRef" class="relative">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Strategie</label>
+        <label class="field-label">Strategie</label>
         <button
           type="button"
           @click="isOpen = !isOpen"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-left bg-white flex justify-between items-center"
+          aria-haspopup="listbox"
+          :aria-expanded="isOpen"
+          class="field text-left flex justify-between items-center"
         >
           <span>{{ selectedLabel }}</span>
           <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +64,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
         </button>
         <ul
           v-if="isOpen"
-          class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto"
+          role="listbox"
+          class="absolute z-10 w-full mt-1 bg-white border border-line rounded-md shadow-lg shadow-ink/10 max-h-60 overflow-auto py-1"
         >
           <li
             v-for="opt in strategyOptions"
@@ -70,8 +73,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
             role="option"
             :aria-selected="strategy === opt.value"
             @click="selectOption(opt.value)"
-            class="px-3 py-2 cursor-pointer hover:bg-blue-50"
-            :class="{ 'bg-blue-100': strategy === opt.value }"
+            class="px-3 py-2 cursor-pointer hover:bg-petrol-50"
+            :class="{ 'bg-petrol-50 text-petrol-700 font-medium': strategy === opt.value }"
           >
             {{ opt.label }}
           </li>
@@ -79,27 +82,27 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
       </div>
 
       <div data-testid="number-input">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Roční výnos [%]</label>
+        <label class="field-label">Roční výnos [%]</label>
         <input
           type="number"
           :value="customRate ?? ''"
           @input="emit('update:customRate', Number(($event.target as HTMLInputElement).value))"
           :disabled="strategy !== 'custom'"
           step="0.1"
-          class="w-full border border-gray-300 rounded px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
+          class="field"
         />
       </div>
     </div>
 
-    <div class="mt-3">
-      <label class="inline-flex items-center cursor-pointer">
+    <div class="mt-4">
+      <label class="inline-flex items-start gap-0.5 cursor-pointer">
         <input
           type="checkbox"
           :checked="investAfterPayoff"
           @change="emit('update:investAfterPayoff', ($event.target as HTMLInputElement).checked)"
-          class="mr-2"
+          class="mr-2 size-4 accent-petrol-600"
         />
-        <span class="text-sm">Po splacení kratší varianty investovat uvolněnou splátku</span>
+        <span class="text-sm leading-5">Po splacení kratší varianty investovat uvolněnou splátku</span>
       </label>
     </div>
   </div>

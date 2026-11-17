@@ -15,14 +15,13 @@ const rowKeys = computed(() => {
 
 <template>
   <div class="overflow-x-auto">
-    <table data-testid="table" class="w-full border-collapse border border-gray-300 text-sm">
+    <table data-testid="table" class="data-table">
       <thead>
-        <tr class="bg-gray-100">
-          <th class="border border-gray-300 px-3 py-2 text-left"></th>
+        <tr>
+          <th></th>
           <th
             v-for="(s, i) in scenarios"
             :key="i"
-            class="border border-gray-300 px-3 py-2 text-left"
           >
             {{ s }}
           </th>
@@ -32,13 +31,11 @@ const rowKeys = computed(() => {
         <tr
           v-for="(key, ri) in rowKeys"
           :key="key"
-          :class="ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
         >
-          <td class="border border-gray-300 px-3 py-2 font-medium">{{ key }}</td>
+          <td>{{ key }}</td>
           <td
             v-for="(s, si) in summary"
             :key="si"
-            class="border border-gray-300 px-3 py-2"
           >
             {{ s[key] }}
           </td>

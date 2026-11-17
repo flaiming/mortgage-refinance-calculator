@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pathlib import Path
 from api.models import CalculateRequest, GraphResponse, SummaryResponse
 from api.services import build_graph_response, build_summary_response
@@ -27,6 +27,17 @@ if (dist / "assets").exists():
 @app.get("/{path:path}")
 async def spa(path: str):
     index = dist / "index.html"
-    if index.exists():
-        return FileResponse(str(index))
-    return {"detail": "Frontend not built. Run: cd frontend && npm run build"}
+    if not index.exists():
+        return {"detail": "Frontend not built. Run: cd frontend && npm run build"}
+
+    # Root-level static files from frontend/public (robots.txt, sitemap.xml, favicons, og-image).
+    if path:
+        candidate = (dist / path).resolve()
+        if candidate.is_relative_to(dist.resolve()) and candidate.is_file():
+            return FileResponse(str(candidate))
+        if path.startswith("api/"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+        # The app has a single page; unknown URLs get the app with a real 404 so they aren't indexed.
+        return FileResponse(str(index), status_code=404)
+
+    return FileResponse(str(index))

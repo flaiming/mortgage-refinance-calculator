@@ -9,6 +9,8 @@ const router = createRouter({
       name: 'calculator',
       component: CalculatorView,
     },
+    // Single-page app: send any unknown path back to the calculator
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 

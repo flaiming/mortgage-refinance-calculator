@@ -1,1 +1,101 @@
 @import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/opsz.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "IBM Plex Sans", ui-sans-serif, sans-serif;
+
+  /* Palette: deep petrol for structure, cool paper background, amber for the one highlight */
+  --color-paper: #f3f5f7;
+  --color-ink: #16212e;
+  --color-muted: #566273;
+  --color-line: #d8dee6;
+  --color-petrol-50: #eaf4f5;
+  --color-petrol-100: #cfe5e8;
+  --color-petrol-600: #0e6a78;
+  --color-petrol-700: #0b5662;
+  --color-petrol-900: #0a3540;
+  --color-amber: #e3a23b;
+  --color-gain: #1f7a4d;
+  --color-gain-50: #e8f4ec;
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-petrol-600);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-white border border-line rounded-xl p-5;
+  }
+
+  .field-label {
+    @apply block text-sm font-medium text-muted mb-1.5;
+  }
+
+  .field {
+    @apply w-full bg-white border border-line rounded-md px-3 py-2 tabular-nums transition-colors
+      hover:border-slate-400
+      focus:outline-none focus:border-petrol-600 focus:ring-2 focus:ring-petrol-100
+      disabled:bg-paper disabled:text-slate-400 disabled:hover:border-line;
+  }
+
+  .data-table {
+    @apply w-full border-collapse text-sm;
+  }
+  .data-table th,
+  .data-table td {
+    @apply border-b border-line px-3 py-2 text-left whitespace-nowrap;
+  }
+  .data-table thead th {
+    @apply bg-paper font-semibold text-ink border-b-2;
+  }
+  .data-table tbody td:first-child {
+    @apply text-muted font-medium whitespace-normal;
+  }
+
+  .prose-block p,
+  .prose-block li {
+    @apply leading-relaxed text-[1.0625rem];
+  }
+  .prose-block p + p {
+    @apply mt-3;
+  }
+  .prose-block a {
+    @apply text-petrol-700 underline underline-offset-2 hover:text-petrol-900;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

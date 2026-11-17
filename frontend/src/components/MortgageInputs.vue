@@ -35,49 +35,49 @@ const refiOptions = computed(() => {
 </script>
 
 <template>
-  <div class="border border-gray-300 rounded-lg p-4 mb-4">
-    <h3 class="text-lg font-semibold mb-3">Původní hypotéka</h3>
+  <div class="panel">
+    <h3 class="text-lg font-semibold mb-4">Původní hypotéka</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div data-testid="text-input">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Splácená částka [Kč]</label>
+        <label class="field-label">Splácená částka [Kč]</label>
         <input
           type="text"
           :value="formattedPrincipal"
           @input="formattedPrincipal = ($event.target as HTMLInputElement).value"
-          class="w-full border border-gray-300 rounded px-3 py-2"
+          class="field"
         />
       </div>
 
       <div data-testid="number-input">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Délka splácení [roky]</label>
+        <label class="field-label">Délka splácení [roky]</label>
         <input
           type="number"
           :value="term"
           @input="emit('update:term', Number(($event.target as HTMLInputElement).value))"
           min="2"
-          class="w-full border border-gray-300 rounded px-3 py-2"
+          class="field"
         />
       </div>
 
       <div data-testid="number-input">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Úrok [%]</label>
+        <label class="field-label">Úrok [%]</label>
         <input
           type="number"
           :value="rate"
           @input="emit('update:rate', Number(($event.target as HTMLInputElement).value))"
           min="0.1"
           step="0.01"
-          class="w-full border border-gray-300 rounded px-3 py-2"
+          class="field"
         />
       </div>
 
       <div data-testid="number-input">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Rok refinancování</label>
+        <label class="field-label">Rok refinancování</label>
         <select
           :value="refinancingYear"
           @change="emit('update:refinancingYear', Number(($event.target as HTMLSelectElement).value))"
-          class="w-full border border-gray-300 rounded px-3 py-2"
+          class="field"
         >
           <option v-for="y in refiOptions" :key="y" :value="y">{{ y }}</option>
         </select>

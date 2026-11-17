@@ -8,15 +8,13 @@ const props = defineProps<{
 const htmlContent = computed(() => {
   if (!props.recommendation) return ''
   // Convert **bold** markdown to <strong> tags
-  return props.recommendation.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  return props.recommendation.replace(/\*\*(.+?)\*\*/g, '<strong class="text-ink">$1</strong>')
 })
 </script>
 
 <template>
-  <div v-if="recommendation" class="mb-6">
-    <h2 class="text-xl font-bold mb-3">Doporučení</h2>
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-      <p v-html="htmlContent" class="text-gray-800"></p>
-    </div>
+  <div v-if="recommendation" class="mb-8 rounded-xl bg-petrol-50 border-l-4 border-amber px-5 py-4">
+    <h2 class="text-xl font-bold mb-2 text-petrol-900">Doporučení</h2>
+    <p v-html="htmlContent" class="text-ink/85 leading-relaxed max-w-[75ch]"></p>
   </div>
 </template>

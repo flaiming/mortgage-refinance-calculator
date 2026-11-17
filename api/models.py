@@ -9,18 +9,18 @@ class VariantInput(BaseModel):
 
 
 class CalculateRequest(BaseModel):
-    principal: int = Field(ge=1, default=2_500_000)
+    principal: int = Field(ge=1, default=3_200_000)
     term: int = Field(ge=2, default=30)
-    rate: float = Field(ge=0.1, default=1.69)  # percentage
-    refinancing_year: int = Field(ge=1, default=7)
+    rate: float = Field(ge=0.1, default=2.3)  # percentage
+    refinancing_year: int = Field(ge=1, default=5)
     strategy: Literal["safe", "medium", "risky", "custom"] = "medium"
     custom_rate: float | None = Field(ge=0, default=None)
     invest_after_payoff: bool = False
     display_mode: Literal["nominal", "real"] = "nominal"
     inflation: float = Field(ge=0, default=2.0)  # percentage
     variants: list[VariantInput] = [
-        VariantInput(refinancing_interest=4.39, length_change=0),
-        VariantInput(refinancing_interest=4.39, length_change=7),
+        VariantInput(refinancing_interest=5.2, length_change=0),
+        VariantInput(refinancing_interest=5.2, length_change=5),
     ]
 
 

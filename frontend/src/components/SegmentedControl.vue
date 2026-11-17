@@ -10,16 +10,18 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="inline-flex rounded-lg border border-gray-300 overflow-hidden">
+  <div class="inline-flex self-start rounded-lg bg-paper border border-line p-1 gap-1" role="group">
     <button
       v-for="opt in options"
       :key="opt.value"
+      type="button"
+      :aria-pressed="modelValue === opt.value"
       :data-testid="modelValue === opt.value ? 'segmented-button-active' : 'segmented-button'"
       :class="[
-        'px-4 py-2 text-sm font-medium transition-colors',
+        'px-4 py-1.5 rounded-md text-sm font-medium transition-colors',
         modelValue === opt.value
-          ? 'bg-blue-600 text-white'
-          : 'bg-white text-gray-700 hover:bg-gray-100'
+          ? 'bg-petrol-700 text-white shadow-sm'
+          : 'text-muted hover:text-ink hover:bg-white'
       ]"
       @click="emit('update:modelValue', opt.value)"
     >

@@ -32,18 +32,17 @@ const bestIndex = computed(() => {
 </script>
 
 <template>
-  <div class="mb-6">
-    <h3 class="text-lg font-semibold mb-2">{{ label }}</h3>
+  <div class="mb-8">
+    <h3 class="text-base font-semibold mb-2">{{ label }}</h3>
     <div class="overflow-x-auto">
-      <table data-testid="table" class="w-full border-collapse border border-gray-300 text-sm">
+      <table data-testid="table" class="data-table">
         <thead>
-          <tr class="bg-gray-100">
-            <th class="border border-gray-300 px-3 py-2 text-left"></th>
+          <tr>
+            <th></th>
             <th
               v-for="(s, i) in scenarios"
               :key="i"
-              class="border border-gray-300 px-3 py-2 text-left"
-              :class="{ 'bg-green-100': i === bestIndex }"
+              :class="{ '!bg-gain-50 !text-gain': i === bestIndex }"
             >
               {{ s }}
             </th>
@@ -53,14 +52,12 @@ const bestIndex = computed(() => {
           <tr
             v-for="(key, ri) in rowKeys"
             :key="key"
-            :class="ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
           >
-            <td class="border border-gray-300 px-3 py-2 font-medium">{{ key }}</td>
+            <td>{{ key }}</td>
             <td
               v-for="(r, si) in rows"
               :key="si"
-              class="border border-gray-300 px-3 py-2"
-              :class="{ 'bg-green-50': si === bestIndex }"
+              :class="{ 'bg-gain-50/60 font-medium': si === bestIndex }"
             >
               {{ r[key] }}
             </td>

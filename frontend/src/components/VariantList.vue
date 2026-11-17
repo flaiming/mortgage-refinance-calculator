@@ -21,7 +21,12 @@ const updateVariant = (index: number, variant: VariantInput) => {
 </script>
 
 <template>
-  <div>
+  <section class="panel">
+    <h3 class="text-lg font-semibold mb-1">Varianty refinancování</h3>
+    <p class="text-sm text-muted mb-4">
+      Nová úroková sazba po skončení fixace. U dalších variant můžete splatnost prodloužit či zkrátit nebo si půjčit víc.
+    </p>
+    <div class="flex flex-col gap-3 mb-3">
     <VariantCard
       v-for="(v, i) in variants"
       :key="i"
@@ -32,11 +37,13 @@ const updateVariant = (index: number, variant: VariantInput) => {
       @update="updateVariant(i, $event)"
       @remove="emit('remove', i)"
     />
+    </div>
     <button
+      type="button"
       @click="emit('add')"
-      class="w-full border-2 border-dashed border-gray-300 rounded-lg p-3 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+      class="w-full border border-dashed border-slate-400 rounded-lg p-2.5 text-sm font-medium text-petrol-700 hover:border-petrol-600 hover:bg-petrol-50 transition-colors"
     >
       Přidat variantu
     </button>
-  </div>
+  </section>
 </template>

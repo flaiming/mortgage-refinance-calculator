@@ -18,8 +18,8 @@ const modeOptions = [
 </script>
 
 <template>
-  <div class="border border-gray-300 rounded-lg p-4 mb-4">
-    <h3 class="text-lg font-semibold mb-3">Zobrazení hodnot</h3>
+  <div class="panel">
+    <h3 class="text-lg font-semibold mb-4">Zobrazení hodnot</h3>
 
     <div class="flex flex-col gap-4">
       <SegmentedControl
@@ -29,7 +29,7 @@ const modeOptions = [
       />
 
       <div data-testid="number-input" class="max-w-xs">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Roční inflace [%]</label>
+        <label class="field-label">Roční inflace [%]</label>
         <input
           type="number"
           :value="inflation"
@@ -37,11 +37,11 @@ const modeOptions = [
           :disabled="displayMode === 'nominal'"
           step="0.1"
           min="0"
-          class="w-full border border-gray-300 rounded px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
+          class="field"
         />
       </div>
 
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-muted">
         Reálné hodnoty zohledňují pokles kupní síly peněz v čase.
       </p>
     </div>

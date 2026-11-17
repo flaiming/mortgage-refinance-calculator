@@ -1,5 +1,6 @@
 import { watch, type Ref } from 'vue'
 import type { VariantInput } from '../types'
+import { DEFAULT_NEW_RATE } from './useCalculator'
 
 interface SyncState {
   principal: Ref<number>
@@ -33,7 +34,7 @@ export function useUrlSync(state: SyncState) {
     try {
       const raw = JSON.parse(params.get('variants')!) as any[]
       state.variants.value = raw.map((v: any) => ({
-        refinancing_interest: v.refinancing_interest ?? v.rate ?? 4.39,
+        refinancing_interest: v.refinancing_interest ?? v.rate ?? DEFAULT_NEW_RATE,
         length_change: v.length_change ?? v.years ?? 0,
         extra_principal: v.extra_principal ?? v.extra ?? 0,
       }))
