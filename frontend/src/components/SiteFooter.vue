@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useConsent } from '../composables/useConsent'
+
+const { openSettings } = useConsent()
+</script>
+
 <template>
   <footer class="mt-20 border-t border-line bg-white">
     <div class="max-w-6xl mx-auto px-4 py-10 grid gap-6 md:grid-cols-[2fr_1fr] text-sm text-muted leading-relaxed">
@@ -11,8 +17,11 @@
           pevným výnosem investic a zjednodušeným daňovým odpočtem.
         </p>
       </div>
-      <div class="md:text-right">
+      <div class="flex flex-col gap-2 md:items-end">
         <a class="text-petrol-700 underline underline-offset-2 hover:text-petrol-900" href="https://github.com/flaiming/mortgage-refinance-calculator" rel="noopener">Zdrojový kód na GitHubu</a>
+        <button type="button" class="text-left text-petrol-700 underline underline-offset-2 hover:text-petrol-900" @click="openSettings">
+          Nastavení cookies
+        </button>
       </div>
     </div>
   </footer>

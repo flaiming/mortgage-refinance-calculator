@@ -2,6 +2,25 @@
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
+    <!-- Consent Mode v2: everything denied until the visitor agrees (see src/composables/useConsent.ts).
+         Must run before the Google tag below. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500
+      });
+      try {
+        var c = JSON.parse(localStorage.getItem('cookie-consent') || 'null');
+        if (c && c.analytics === true && Date.now() - c.ts < 365 * 864e5) {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+        }
+      } catch (e) {}
+    </script>
     <!-- Google tag (snippet from the Google Analytics setup wizard) -->
     <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-W4W4HFPN"></script>
     <script>

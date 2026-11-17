@@ -2,6 +2,7 @@
 import { useCalculator } from '../composables/useCalculator'
 import SiteHeader from '../components/SiteHeader.vue'
 import SiteFooter from '../components/SiteFooter.vue'
+import CookieBanner from '../components/CookieBanner.vue'
 import GuideContent from '../components/GuideContent.vue'
 import MortgageInputs from '../components/MortgageInputs.vue'
 import InvestmentStrategy from '../components/InvestmentStrategy.vue'
@@ -101,13 +102,14 @@ const updateVariants = (newVariants: any[]) => {
   </main>
 
   <SiteFooter />
+  <CookieBanner />
 
   <!-- Loading indicator: small pill so the page doesn't flash on every keystroke -->
   <div
     v-if="isLoading"
     data-testid="loading-indicator"
     role="status"
-    class="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-ink text-white px-4 py-2 text-sm shadow-lg"
+    class="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-full bg-ink text-white px-4 py-2 text-sm shadow-lg"
   >
     <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
